@@ -1,12 +1,12 @@
 import axios from 'axios';
-export default class PixabayApiService {
+export default class MovieApiService {
   constructor() {
-    this.searchQuery = '';
+    this.searchQuery = 'star wars';
     this.page = 1;
     this.per_page = 20;
   }
 
-  async fetchPictures() {
+  async fetchMovie() {
     try {
       const BASE_URL = 'https://api.themoviedb.org/3/';
       const API_KEY = 'b4a549abb798b19dbb7e63335d135053';
@@ -18,12 +18,12 @@ export default class PixabayApiService {
         // safesearch: 'false',
         // per_page: this.per_page,
         api_key: API_KEY,
-        language: 'en-US',
         query: this.searchQuery,
         page: this.page,
+        append_to_response: 'genre, list',
       });
 
-      const response = await axios.get(`${BASE_URL}saerch/movie?${options}`);
+      const response = await axios.get(`${BASE_URL}search/movie?${options}`);
       return response;
     } catch (error) {
       console.log(error.message);
