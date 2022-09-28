@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MovieApiService from './api-service';
 import throttle from 'lodash.throttle';
+import Pagination from './pagination';
 
 const refs = {
   formEl: document.querySelector('.search-form'),
@@ -16,7 +17,7 @@ function createGallery(evt) {
   evt.preventDefault();
 
   clearLastMessage();
-  onHideLoader();
+  // onHideLoader();
 
   movieApiService.query = evt.currentTarget.elements.searchQuery.value;
   movieApiService.resetPage();
@@ -25,21 +26,22 @@ function createGallery(evt) {
     .fetchMovie()
     .then(response => {
       onClearGallery();
+      onClearPagination();
 
       const collectionOfMovie = response.data.results;
       if (collectionOfMovie.length === 0) {
-        onHideLoader();
+        // onHideLoader();
       } else if (
         response.data.total_results > 0 &&
         response.data.total_results <= 20
       ) {
         renderGallery(createTemplate(collectionOfMovie));
-        initialScroll();
-        onHideLoader();
+        // initialScroll();
+        // onHideLoader();
         renderLastMessage();
       } else {
         renderGallery(createTemplate(collectionOfMovie));
-        initialScroll();
+        // initialScroll();
 
         if (!isLastpage(response)) {
           window.addEventListener(
@@ -51,19 +53,31 @@ function createGallery(evt) {
               const endOfPage = wievPortHeight + currentPosition >= bodyHeight;
 
               if (endOfPage && !isLastpage(response)) {
-                onLoadMore();
+                // onLoadMore();
               }
-              return;
+              return response;
             }, 1000)
           );
-          onshowLoader();
-          return;
+          // onshowLoader();
+          return response;
         } else {
-          onHideLoader();
+          // onHideLoader();
           renderLastMessage();
-          return;
+          return response;
         }
       }
+    })
+    .then(response => {
+      const numPages = response.data.total_pages;
+      const pagination = new Pagination({
+        currentPage: 1,
+        totalPages: numPages,
+        containerSelector: '.pagination__container',
+        onPageChange: page => {
+          getSelectedPage(page);
+        },
+      });
+      pagination.init();
     })
     .catch(error => console.log(error));
 }
@@ -93,17 +107,17 @@ function renderGallery(markup) {
   refs.galleryContainerEl.insertAdjacentHTML('beforeend', markup);
 }
 
-function onLoadMore() {
-  movieApiService.incrementPage();
+function onLoadMore(page) {
+  movieApiService.incrementPage(page);
   movieApiService.fetchMovie().then(response => {
     renderGallery(createTemplate(response.data.results));
-    initialScroll();
+    // initialScroll();
 
     if (isLastpage(response)) {
-      onHideLoader();
+      // onHideLoader();
       renderLastMessage();
     } else {
-      onshowLoader();
+      // onshowLoader();
     }
   });
 }
@@ -156,30 +170,42 @@ function initialScroll() {
   });
 }
 
-async function getGenreslist(arr) {
-  let genresArr = [];
-  let allGenres = [];
-  await axios
-    .get(
-      `https://api.themoviedb.org/3/genre/movie/list?api_key=262a417f78469232900b1579d8d8e776&language=en-US`
-    )
-    .then(response => {
-      allGenres = response.data.genres;
-      allGenres.forEach(e => {
-        if (arr.includes(e.id)) {
-          genresArr.push(e.name);
-        }
-      });
-      const genres = genresArr.join(', ');
-      console.log(genres);
-      return genres;
-    })
+// async function getGenreslist(arr) {
+//   let genresArr = [];
+//   let allGenres = [];
+//   await axios
+//     .get(
+//       `https://api.themoviedb.org/3/genre/movie/list?api_key=262a417f78469232900b1579d8d8e776&language=en-US`
+//     )
+//     .then(response => {
+//       allGenres = response.data.genres;
+//       allGenres.forEach(e => {
+//         if (arr.includes(e.id)) {
+//           genresArr.push(e.name);
+//         }
+//       });
+//       const genres = genresArr.join(', ');
+//       console.log(genres);
+//       return genres;
+//     })
 
-    .catch(error => console.error(error));
-}
+//     .catch(error => console.error(error));
+// }
 
 function getYear(date) {
   const dateRelise = new Date(date);
   const year = dateRelise.getFullYear();
   return year;
+}
+
+function getSelectedPage(page) {
+  console.log(page);
+
+  onClearGallery();
+  onLoadMore(page);
+}
+
+function onClearPagination() {
+  const paginationEl = document.querySelector('.pagination__container');
+  paginationEl.innerHTML = '';
 }

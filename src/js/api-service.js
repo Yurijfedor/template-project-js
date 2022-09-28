@@ -38,8 +38,8 @@ export default class MovieApiService {
     this.searchQuery = newQuery;
   }
 
-  incrementPage() {
-    this.page += 1;
+  incrementPage(page) {
+    this.page = page;
   }
 
   resetPage() {
