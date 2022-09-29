@@ -170,27 +170,29 @@ function initialScroll() {
   });
 }
 
-// async function getGenreslist(arr) {
-//   let genresArr = [];
-//   let allGenres = [];
-//   await axios
-//     .get(
-//       `https://api.themoviedb.org/3/genre/movie/list?api_key=262a417f78469232900b1579d8d8e776&language=en-US`
-//     )
-//     .then(response => {
-//       allGenres = response.data.genres;
-//       allGenres.forEach(e => {
-//         if (arr.includes(e.id)) {
-//           genresArr.push(e.name);
-//         }
-//       });
-//       const genres = genresArr.join(', ');
-//       console.log(genres);
-//       return genres;
-//     })
+async function getGenreslist(arr) {
+  let genresArr = [];
+  let allGenres = [];
+  await axios
+    .get(
+      `https://api.themoviedb.org/3/genre/movie/list?api_key=262a417f78469232900b1579d8d8e776&language=en-US`
+    )
+    .then(response => {
+      allGenres = response.data.genres;
+      // allGenres.forEach(e => {
+      //   if (arr.includes(e.id)) {
+      //     genresArr.push(e.name);
+      //   }
+      // });
+      // const genres = genresArr.join(', ');
+      console.log(allGenres);
+      // return genres;
+    })
 
-//     .catch(error => console.error(error));
-// }
+    .catch(error => console.error(error));
+}
+
+getGenreslist();
 
 function getYear(date) {
   const dateRelise = new Date(date);

@@ -18,7 +18,7 @@ class Pagination {
 
   render() {
     let itemsTemplate = '';
-    for (let i = this.currentPage; i <= 100; i += 1) {
+    for (let i = this.currentPage; i <= this.totalPages; i += 1) {
       const template = ` <a href="#" data-page="${i}" class="${
         i === this.currentPage ? 'active' : ''
       }">${i}</a>`;

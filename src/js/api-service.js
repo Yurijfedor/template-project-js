@@ -20,7 +20,6 @@ export default class MovieApiService {
         api_key: API_KEY,
         query: this.searchQuery,
         page: this.page,
-        append_to_response: 'genre, list',
       });
 
       const response = await axios.get(`${BASE_URL}search/movie?${options}`);
