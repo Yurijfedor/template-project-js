@@ -1,9 +1,8 @@
 import axios from 'axios';
 export default class MovieApiService {
   constructor() {
-    this.searchQuery = 'star wars';
+    this.searchQuery = '';
     this.page = 1;
-    this.per_page = 20;
   }
 
   async fetchMovie() {
